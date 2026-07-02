@@ -2,8 +2,16 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'motion/react'
 import { useAuth } from '@/components/AuthProvider'
-import { motion, AnimatePresence } from 'motion/react'
+
+const SONOMA_GRADIENT = `
+  radial-gradient(ellipse at 20% 30%, #c9a0dc 0%, transparent 50%),
+  radial-gradient(ellipse at 80% 20%, #a8c4e8 0%, transparent 45%),
+  radial-gradient(ellipse at 60% 80%, #f4b8d1 0%, transparent 50%),
+  radial-gradient(ellipse at 10% 80%, #9ec8e8 0%, transparent 45%),
+  linear-gradient(135deg, #b6c8f0 0%, #d4a8d8 40%, #f0b8cc 70%, #c4d8f4 100%)
+`
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -19,82 +27,98 @@ export default function LoginPage() {
     setError(null)
     const errMsg = await signIn(email, password)
     setSubmitting(false)
-    if (errMsg) {
-      setError(errMsg)
-    } else {
-      router.push('/')
-    }
+    if (errMsg) setError(errMsg)
+    else router.push('/')
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#0f0a1a] px-6 relative overflow-hidden">
-      {/* Ambient blobs */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-pink-600/15 rounded-full blur-[120px] pointer-events-none" />
-
+    <main
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: SONOMA_GRADIENT }}
+    >
       <motion.form
         onSubmit={handleSubmit}
-        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-        className="w-full max-w-sm bg-white/8 backdrop-blur-2xl border border-white/15 rounded-3xl p-8 shadow-2xl relative z-10"
+        transition={{ type: 'spring', stiffness: 240, damping: 22 }}
+        className="flex flex-col w-full max-w-xs"
+        style={{
+          background: 'rgba(255,255,255,0.38)',
+          backdropFilter: 'blur(40px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(200%)',
+          border: '1px solid rgba(255,255,255,0.6)',
+          borderRadius: 14,
+          padding: 28,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.08)',
+        }}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-center mb-8"
-        >
-          <div className="text-4xl mb-3">🌌</div>
-          <h1 className="text-white text-xl font-semibold">Aurora</h1>
-          <p className="text-white/40 text-sm mt-1">Your private space</p>
-        </motion.div>
+        <div className="text-center mb-6">
+          <div style={{ fontSize: 36, marginBottom: 8 }}>🌌</div>
+          <h1 style={{ fontSize: 17, fontWeight: 600, color: 'rgba(0,0,0,0.82)', letterSpacing: '-0.02em' }}>
+            Aurora
+          </h1>
+          <p style={{ fontSize: 12, color: 'rgba(0,0,0,0.45)', marginTop: 2 }}>
+            Sign in to continue
+          </p>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="flex flex-col gap-3"
-        >
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/15 text-white placeholder-white/30 outline-none focus:border-white/40 transition-colors text-sm"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/15 text-white placeholder-white/30 outline-none focus:border-white/40 transition-colors text-sm"
-            required
-          />
-        </motion.div>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="mb-2 outline-none transition-all"
+          style={{
+            padding: '8px 12px',
+            borderRadius: 8,
+            border: '1px solid rgba(0,0,0,0.12)',
+            background: 'rgba(255,255,255,0.55)',
+            fontSize: 13,
+            color: 'rgba(0,0,0,0.85)',
+          }}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="mb-4 outline-none transition-all"
+          style={{
+            padding: '8px 12px',
+            borderRadius: 8,
+            border: '1px solid rgba(0,0,0,0.12)',
+            background: 'rgba(255,255,255,0.55)',
+            fontSize: 13,
+            color: 'rgba(0,0,0,0.85)',
+          }}
+        />
 
-        <AnimatePresence>
-          {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="text-red-300/90 text-xs mt-3"
-            >
-              {error}
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {error && (
+          <p className="mb-3 text-center" style={{ fontSize: 12, color: '#d4183d' }}>
+            {error}
+          </p>
+        )}
 
-        <motion.button
+        <button
           type="submit"
           disabled={submitting}
-          whileTap={{ scale: 0.97 }}
-          className="w-full mt-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white font-medium transition-colors disabled:opacity-40 text-sm"
+          style={{
+            padding: '8px 0',
+            borderRadius: 8,
+            background: 'rgba(0,122,255,0.85)',
+            color: 'white',
+            fontSize: 13,
+            fontWeight: 500,
+            border: 'none',
+            cursor: submitting ? 'default' : 'pointer',
+            opacity: submitting ? 0.6 : 1,
+            transition: 'opacity 0.15s',
+          }}
         >
-          {submitting ? 'Signing in...' : 'Sign in'}
-        </motion.button>
+          {submitting ? 'Signing in...' : 'Sign In'}
+        </button>
       </motion.form>
     </main>
   )

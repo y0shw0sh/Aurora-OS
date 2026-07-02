@@ -20,6 +20,7 @@ export interface Note {
   type: 'note' | 'journal'
   title: string | null
   content: string
+  color: string
   is_private: boolean
   created_at: string
   updated_at: string

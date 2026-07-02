@@ -30,4 +30,10 @@ export const apps: AppConfig[] = [
     emoji: '💬',
     color: 'linear-gradient(135deg, rgba(170,140,255,0.85), rgba(120,99,255,0.85))',
   },
+  {
+    id: 'music',
+    name: 'Vynora',
+    emoji: '🎵',
+    color: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+  },
 ]

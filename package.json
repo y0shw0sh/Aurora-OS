@@ -12,11 +12,15 @@
     "@livekit/components-react": "^2.9.21",
     "@livekit/components-styles": "^1.2.0",
     "@supabase/supabase-js": "^2.109.0",
+    "clsx": "^2.1.1",
     "livekit-server-sdk": "^2.16.0",
+    "lucide-react": "^1.23.0",
     "motion": "^12.42.0",
     "next": "16.2.9",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
