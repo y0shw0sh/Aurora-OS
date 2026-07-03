@@ -35,6 +35,8 @@ const DEFAULT_SIZES: Record<string, { width: number; height: number }> = {
   default: { width: 520, height: 540 },
   music: { width: 700, height: 700 },
   legacy: { width: 1200, height: 800 },
+  aquarium: { width: 900, height: 620 },
+  piano:    { width: 680, height: 520 },
 }
 
 export const useWindowManager = create<WindowManagerStore>((set, get) => ({

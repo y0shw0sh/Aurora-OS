@@ -8,6 +8,8 @@ import GalleryApp from '@/components/apps/GalleryApp'
 import LoungeApp from '@/components/apps/LoungeApp'
 import MusicApp from '@/components/apps/MusicApp'
 import LegacySite from '@/components/apps/LegacySite'
+import AquariumApp from '@/components/apps/AquariumApp'
+import PianoApp from '@/components/apps/PianoApp'
 
 function AppContent({ appId }: { appId: string }) {
   switch (appId) {
@@ -17,6 +19,8 @@ function AppContent({ appId }: { appId: string }) {
     case 'lounge':  return <LoungeApp />
     case 'music':   return <MusicApp />
     case 'legacy':  return <LegacySite />
+    case 'aquarium': return <AquariumApp />
+case 'piano':    return <PianoApp />
     default:
       return (
         <div className="flex items-center justify-center h-full">

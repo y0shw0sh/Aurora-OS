@@ -46,5 +46,18 @@ export const apps: AppConfig[] = [
     fullscreen: true,
     src: '/legacy-site/index.html',
   },
+
+  {
+  id: 'aquarium',
+  name: 'Aquarium',
+  emoji: '🐠',
+  color: 'linear-gradient(135deg, #5194ff, #38bdf8)',
+},
+{
+  id: 'piano',
+  name: 'Piano',
+  emoji: '🎹',
+  color: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+},
   
 ]
