@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Plus, Fish as FishIcon } from 'lucide-react'
 import { DrawingPad } from '@/components/apps/aquarium/DrawingPad'
 import { FishGallery } from '@/components/apps/aquarium/FishGallery'
+import { supabase } from '@/lib/supabaseClient'
+import { useAuth } from '@/components/AuthProvider'
 
 interface Fish {
   id: string
@@ -12,6 +14,15 @@ interface Fish {
   velocity: { x: number; y: number }
   flipped: boolean
   speed: number
+}
+
+interface FishRow {
+  id: string
+  user_id: string
+  image_data: string
+  position_x: number
+  position_y: number
+  created_at: string
 }
 
 interface Bubble {
@@ -24,6 +35,20 @@ const BUBBLE_SPAWNS = [
   { x: 80, y: 440 }, { x: 200, y: 460 }, { x: 400, y: 450 },
   { x: 600, y: 455 }, { x: 750, y: 440 }, { x: 320, y: 470 },
 ]
+
+// Convert a DB row into the local animated Fish shape.
+// Each device generates its own random velocity/flip so fish swim
+// independently per-viewer — only the fish's existence + image is shared.
+function rowToFish(row: FishRow): Fish {
+  return {
+    id: row.id,
+    imageData: row.image_data,
+    position: { x: row.position_x, y: row.position_y },
+    velocity: { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 1 },
+    flipped: Math.random() > 0.5,
+    speed: 1,
+  }
+}
 
 function AquariumBackground() {
   return (
@@ -99,43 +124,64 @@ function AquariumBackground() {
 }
 
 export default function AquariumApp() {
+  const { session } = useAuth()
   const [fish, setFish] = useState<Fish[]>([])
   const [bubbles, setBubbles] = useState<Bubble[]>([])
   const [showDraw, setShowDraw] = useState(false)
   const [showGallery, setShowGallery] = useState(false)
+  const [loading, setLoading] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Load fish from localStorage
+  // Initial load from Supabase
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('aurora-aquarium-fish')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        setFish(parsed.map((f: Fish) => ({
-          ...f,
-          position: f.position ?? { x: 200 + Math.random() * 400, y: 200 + Math.random() * 200 },
-          velocity: { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 1 },
-          flipped: Math.random() > 0.5,
-          speed: 1,
-        })))
+    let cancelled = false
+    const loadFish = async () => {
+      const { data, error } = await supabase
+        .from('aquarium_fish')
+        .select('*')
+        .order('created_at', { ascending: true })
+      if (error) { console.error(error); setLoading(false); return }
+      if (!cancelled && data) {
+        setFish((data as FishRow[]).map(rowToFish))
       }
-    } catch {}
+      setLoading(false)
+    }
+    loadFish()
+    return () => { cancelled = true }
   }, [])
 
-  // Save fish to localStorage when they change
+  // Realtime sync — insert/delete events from either user update the shared tank
   useEffect(() => {
-    if (fish.length > 0) {
-      try { localStorage.setItem('aurora-aquarium-fish', JSON.stringify(fish)) } catch {}
-    }
-  }, [fish])
+    const channel = supabase
+      .channel('aquarium-fish-changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'aquarium_fish' },
+        (payload) => {
+          const row = payload.new as FishRow
+          setFish(prev => prev.some(f => f.id === row.id) ? prev : [...prev, rowToFish(row)])
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'aquarium_fish' },
+        (payload) => {
+          const oldRow = payload.old as { id: string }
+          setFish(prev => prev.filter(f => f.id !== oldRow.id))
+        }
+      )
+      .subscribe()
 
-  // Fish animation
+    return () => { supabase.removeChannel(channel) }
+  }, [])
+
+  // Fish swim animation (local only — not synced between devices)
   useEffect(() => {
     const id = setInterval(() => {
       setFish(prev => prev.map(f => {
         let { x, y } = f.position
         let { x: vx, y: vy } = f.velocity
-        let { flipped } = f
+        let flipped = f.flipped
         x += vx * f.speed; y += vy * f.speed
         if (x <= BOUNDS.minX || x >= BOUNDS.maxX) { vx = -vx; flipped = vx > 0 }
         if (y <= BOUNDS.minY || y >= BOUNDS.maxY) vy = -vy
@@ -195,23 +241,34 @@ export default function AquariumApp() {
     setTimeout(() => setFish(prev => prev.map(f => f.id === id ? { ...f, speed: 1 } : f)), 1000)
   }, [])
 
-  const addFish = (imageData: string) => {
-    setFish(prev => [...prev, {
-      id: String(Date.now()),
-      imageData,
-      position: { x: 300 + Math.random() * 200, y: 180 + Math.random() * 150 },
-      velocity: { x: 1, y: 0.5 },
-      flipped: false, speed: 1,
-    }])
+  const addFish = async (imageData: string) => {
+    if (!session?.user?.id) return
+    const position = { x: 300 + Math.random() * 200, y: 180 + Math.random() * 150 }
+
+    const { data, error } = await supabase
+      .from('aquarium_fish')
+      .insert({
+        user_id: session.user.id,
+        image_data: imageData,
+        position_x: position.x,
+        position_y: position.y,
+      })
+      .select()
+      .maybeSingle()
+
+    if (error) { console.error(error); return }
+
+    // Add locally right away (realtime event will also arrive but is deduped by id)
+    if (data) {
+      setFish(prev => prev.some(f => f.id === data.id) ? prev : [...prev, rowToFish(data as FishRow)])
+    }
     setShowDraw(false)
   }
 
-  const deleteFish = (id: string) => {
-    setFish(prev => {
-      const next = prev.filter(f => f.id !== id)
-      try { localStorage.setItem('aurora-aquarium-fish', JSON.stringify(next)) } catch {}
-      return next
-    })
+  const deleteFish = async (id: string) => {
+    setFish(prev => prev.filter(f => f.id !== id))
+    const { error } = await supabase.from('aquarium_fish').delete().eq('id', id)
+    if (error) console.error(error)
   }
 
   return (
@@ -241,6 +298,12 @@ export default function AquariumApp() {
           }}
           onClick={() => handleFishClick(f.id)} />
       ))}
+
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center z-20 text-white text-sm">
+          Loading the tank…
+        </div>
+      )}
 
       {/* Bottom controls */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
