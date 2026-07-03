@@ -29,10 +29,14 @@ export default function WindowLayer() {
   return (
     <>
       {windows.map((win: WindowState) => (
-        <AppWindow key={win.id} win={win}>
-          <AppContent appId={win.appId} />
-        </AppWindow>
-      ))}
+  <AppWindow
+    key={win.id}
+    win={win}
+    transparent={win.appId === 'gallery' || win.appId === 'lounge'}
+  >
+    <AppContent appId={win.appId} />
+  </AppWindow>
+))}
     </>
   )
 }

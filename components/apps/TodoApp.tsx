@@ -457,15 +457,24 @@ export default function TodoApp() {
         updated_at: new Date().toISOString(),
       }).eq('id', activeItem.id)
     } else if (composingKind) {
-      await supabase.from('todos').insert({
-        user_id:  userId,
-        type:     composingKind,
-        title:    updated.title ?? null,
-        content:  updated.content ?? '',
-        tasks:    updated.tasks ?? [],
-        pinned:   false,
-        is_private: false,
-      })
+      console.log("USER ID:", userId)
+console.log("COMPOSING KIND:", composingKind)
+
+const { data, error } = await supabase
+  .from('todos')
+  .insert({
+    user_id: userId,
+    type: composingKind,
+    title: updated.title ?? null,
+    content: updated.content ?? '',
+    tasks: updated.tasks ?? [],
+    pinned: false,
+    is_private: false,
+  })
+  .select()
+
+console.log("INSERT DATA:", data)
+console.log("INSERT ERROR:", error)
     }
     await fetchItems()
   }

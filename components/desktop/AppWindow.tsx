@@ -7,9 +7,10 @@ import { useWindowManager, WindowState } from '@/lib/windowManager'
 interface AppWindowProps {
   win: WindowState
   children: ReactNode
+  transparent?: boolean
 }
 
-export default function AppWindow({ win, children }: AppWindowProps) {
+export default function AppWindow({ win, children, transparent }: AppWindowProps) {
   const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, moveWindow } =
     useWindowManager()
   const dragRef = useRef<{ mx: number; my: number; wx: number; wy: number } | null>(null)
@@ -47,22 +48,28 @@ export default function AppWindow({ win, children }: AppWindowProps) {
           exit={{ opacity: 0, scale: 0.94, y: 12 }}
           transition={{ type: 'spring', stiffness: 340, damping: 30 }}
           style={{
-            position: 'fixed',
-            left: win.x,
-            top: win.y,
-            width: win.width,
-            height: win.height,
-            zIndex: win.zIndex,
-            borderRadius: 12,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.32), 0 8px 24px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)',
-            background: 'rgba(255,255,255,0.18)',
-            backdropFilter: 'blur(40px) saturate(200%)',
-            WebkitBackdropFilter: 'blur(40px) saturate(200%)',
-            border: '1px solid rgba(255,255,255,0.5)',
-          }}
+  position: 'fixed',
+  left: win.x,
+  top: win.y,
+  width: win.width,
+  height: win.height,
+  zIndex: win.zIndex,
+  borderRadius: 12,
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+  boxShadow: transparent
+    ? '0 32px 80px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.10), inset 0 0 0 1px rgba(255,255,255,0.25)'
+    : '0 32px 80px rgba(0,0,0,0.32), 0 8px 24px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)',
+  background: transparent
+    ? 'rgba(255,255,255,0.04)'
+    : 'rgba(28,28,32,0.82)',
+  backdropFilter: transparent ? 'blur(60px) saturate(180%)' : 'blur(40px) saturate(200%)',
+  WebkitBackdropFilter: transparent ? 'blur(60px) saturate(180%)' : 'blur(40px) saturate(200%)',
+  border: transparent
+    ? '1px solid rgba(255,255,255,0.18)'
+    : '1px solid rgba(255,255,255,0.50)',
+}}
           onMouseDown={() => focusWindow(win.id)}
         >
           {/* Title bar — pink glass gradient exactly from design */}

@@ -13,7 +13,7 @@ export interface DesktopLayout {
 const DEFAULT_LAYOUT: DesktopLayout = {
   wallpaper_url: null,
   wallpaper_type: 'gradient',
-  dock_apps: ['todo', 'notes', 'gallery', 'lounge'],
+  dock_apps: ['todo', 'notes', 'gallery', 'lounge', 'music'],
 }
 
 export function useDesktopLayout() {
@@ -23,19 +23,21 @@ export function useDesktopLayout() {
   const [layoutLoading, setLayoutLoading] = useState(true)
 
   useEffect(() => {
-    if (!userId) return
+    if (!userId) return          // ← wait until session is ready
     fetchLayout()
-  }, [userId])
+  }, [userId])                   // ← re-runs when userId becomes available
 
   const fetchLayout = async () => {
-    const { data } = await supabase
+    setLayoutLoading(true)
+    const { data, error } = await supabase
       .from('desktop_layout')
       .select('*')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()             // ← maybeSingle instead of single — no error if row doesn't exist yet
+
     if (data) {
       setLayout({
-        wallpaper_url: data.wallpaper_url,
+        wallpaper_url: data.wallpaper_url ?? null,
         wallpaper_type: data.wallpaper_url ? 'image' : 'gradient',
         dock_apps: data.dock_apps ?? DEFAULT_LAYOUT.dock_apps,
       })
@@ -47,23 +49,27 @@ export function useDesktopLayout() {
     if (!userId) return
     const ext = file.name.split('.').pop()
     const path = `${userId}/wallpaper.${ext}`
-    const { error } = await supabase.storage
-      .from('gallery')
+
+    const { error: uploadError } = await supabase.storage
+      .from('wallpapers')
       .upload(path, file, { upsert: true })
-    if (error) throw error
-    const { data } = supabase.storage.from('gallery').getPublicUrl(path)
+    if (uploadError) throw uploadError
+
+    const { data } = supabase.storage.from('wallpapers').getPublicUrl(path)
+
     const updated: DesktopLayout = {
       ...layout,
       wallpaper_url: data.publicUrl,
       wallpaper_type: 'image',
     }
     setLayout(updated)
+
     await supabase.from('desktop_layout').upsert({
       user_id: userId,
       wallpaper_url: data.publicUrl,
       dock_apps: layout.dock_apps,
       updated_at: new Date().toISOString(),
-    })
+    }, { onConflict: 'user_id' })
   }
 
   const resetWallpaper = async () => {
@@ -73,12 +79,13 @@ export function useDesktopLayout() {
       wallpaper_type: 'gradient',
     }
     setLayout(updated)
+
     await supabase.from('desktop_layout').upsert({
       user_id: userId,
       wallpaper_url: null,
       dock_apps: layout.dock_apps,
       updated_at: new Date().toISOString(),
-    })
+    }, { onConflict: 'user_id' })
   }
 
   return { layout, layoutLoading, uploadWallpaper, resetWallpaper }

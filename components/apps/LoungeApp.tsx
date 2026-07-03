@@ -186,7 +186,7 @@ export default function LoungeApp() {
     return (
       <div
         className="w-full h-full relative"
-        style={{ background: 'linear-gradient(140deg, #f9d3e8 0%, #f3b8d9 30%, #e8a0cc 60%, #f0bfdc 100%)' }}
+        style={{ background: 'rgba(255,220,240,0.12)' }}
       >
         <VideoCall onEnd={() => setInCall(false)} />
       </div>
@@ -197,20 +197,20 @@ export default function LoungeApp() {
   return (
     <div
       className="w-full h-full flex flex-col overflow-hidden relative"
-      style={{ background: 'linear-gradient(140deg, #f9d3e8 0%, #f3b8d9 30%, #e8a0cc 60%, #f0bfdc 100%)' }}
+      style={{ background: 'rgba(255,220,240,0.12)' }}
     >
       {/* Background orbs */}
       <div className="absolute pointer-events-none"
-        style={{ width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,182,218,0.7) 0%, transparent 70%)', top: -100, left: -80 }} />
+        style={{ width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,182,218,0.25) 0%, transparent 70%)', top: -100, left: -80 }} />
       <div className="absolute pointer-events-none"
-        style={{ width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,120,200,0.45) 0%, transparent 70%)', bottom: -60, right: -40 }} />
+        style={{ width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,120,200,0.15) 0%, transparent 70%)', bottom: -60, right: -40 }} />
 
       {/* Header */}
       <div
         className="flex items-center px-4 shrink-0 relative z-10"
         style={{
           height: 44,
-          background: 'rgba(255,240,250,0.2)',
+          background: 'rgba(255,240,250,0.08)',
           backdropFilter: 'blur(24px)',
           borderBottom: '1px solid rgba(255,255,255,0.25)',
         }}
@@ -274,7 +274,7 @@ export default function LoungeApp() {
           style={{
             width: chatOpen ? 256 : 0,
             opacity: chatOpen ? 1 : 0,
-            background: 'rgba(255,240,250,0.18)',
+            background: 'rgba(255,240,250,0.06)',
             backdropFilter: 'blur(40px)',
             borderLeft: chatOpen ? '1px solid rgba(255,255,255,0.28)' : 'none',
           }}

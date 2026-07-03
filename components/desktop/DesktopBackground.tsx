@@ -9,8 +9,9 @@ const SONOMA_GRADIENT = `
 `
 
 interface DesktopBackgroundProps {
-  wallpaperUrl: string | null
+  wallpaperUrl:  string | null
 }
+
 
 export default function DesktopBackground({ wallpaperUrl }: DesktopBackgroundProps) {
   return (

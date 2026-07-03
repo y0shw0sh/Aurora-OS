@@ -202,13 +202,16 @@ export default function GalleryApp() {
 
       const { data: pub } = supabase.storage.from('gallery-photos').getPublicUrl(path);
 
-      const { error: insertError } = await supabase.from('gallery_entries').insert({
-        user_id: session.user.id,
-        image_url: pub.publicUrl,
-        caption: composeText.trim() || 'Untitled note.',
-        author: composeName.trim() || 'Unknown',
-      });
-      if (insertError) throw insertError;
+  const { error: insertError } = await supabase
+  .from('gallery_entries')
+  .insert({
+    user_id: session.user.id,
+    image_url: pub.publicUrl,
+    caption: composeText.trim() || 'Untitled note.',
+    entry_date: new Date().toISOString().split('T')[0],
+  });
+
+if (insertError) throw insertError;
 
       setComposeImg(null);
       setComposeFile(null);
@@ -243,7 +246,7 @@ export default function GalleryApp() {
   const SPREAD = 148;
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f2f1ec', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@300;400;500;600&display=swap');
         * { box-sizing: border-box; }
@@ -264,11 +267,11 @@ export default function GalleryApp() {
         borderRadius: 18,
         overflow: 'hidden',
         background: `
-          radial-gradient(ellipse 110% 65% at 50% 10%, rgba(255,214,10,0.10) 0%, transparent 65%),
-          radial-gradient(ellipse 70%  50% at 15% 70%, rgba(0,122,255,0.05) 0%, transparent 60%),
-          radial-gradient(ellipse 60%  40% at 85% 75%, rgba(255,214,10,0.06) 0%, transparent 60%),
-          linear-gradient(165deg, #f7f6f1 0%, #f2f1ec 45%, #efeee8 75%, #ece9e0 100%)
-        `,
+  radial-gradient(ellipse 110% 65% at 50% 10%, rgba(255, 255, 255, 0.06) 0%, transparent 0 %),
+  radial-gradient(ellipse 70%  50% at 15% 70%, rgba(0,122,255,0.03) 0%, transparent 0%),
+  radial-gradient(ellipse 60%  40% at 85% 75%, rgba(255, 255, 255, 0.04) 0%, transparent 0%),
+  rgba(255,255,255,0.05)
+`,
         color: INK,
         WebkitFontSmoothing: 'antialiased',
       }}>

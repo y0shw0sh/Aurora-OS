@@ -12,7 +12,7 @@ import WindowLayer from '@/components/desktop/WindowLayer'
 export default function Desktop() {
   const { session, loading } = useAuth()
   const router = useRouter()
-  const { layout, layoutLoading, uploadWallpaper, resetWallpaper } = useDesktopLayout()
+  const { layout, uploadWallpaper, resetWallpaper } = useDesktopLayout()
 
   useEffect(() => {
     if (!loading && !session) router.push('/login')
@@ -32,26 +32,14 @@ export default function Desktop() {
   }
 
   return (
-    <div
-      className="w-screen h-screen overflow-hidden relative"
-      style={{ cursor: 'default' }}
-    >
-      {/* Layer 1 — wallpaper */}
+    <div className="w-screen h-screen overflow-hidden relative" style={{ cursor: 'default' }}>
       <DesktopBackground wallpaperUrl={layout.wallpaper_url} />
-
-      {/* Layer 2 — menu bar */}
       <MenuBar
         onUploadWallpaper={uploadWallpaper}
         onResetWallpaper={resetWallpaper}
       />
-
-      {/* Layer 3 — desktop area (icons/widgets go here later) */}
       <div className="absolute inset-0" style={{ top: 28, bottom: 88 }} />
-
-      {/* Layer 4 — app windows */}
       <WindowLayer />
-
-      {/* Layer 5 — dock */}
       <Dock />
     </div>
   )

@@ -24,6 +24,7 @@ interface WindowManagerStore {
   minimizeWindow: (id: string) => void
   maximizeWindow: (id: string) => void
   restoreWindow: (id: string) => void
+  
 }
 
 const DEFAULT_SIZES: Record<string, { width: number; height: number }> = {

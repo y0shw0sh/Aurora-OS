@@ -3,6 +3,8 @@ export interface AppConfig {
   name: string
   emoji: string
   color: string
+  fullscreen?: boolean
+  src?: string
 }
 
 export const apps: AppConfig[] = [
@@ -36,4 +38,13 @@ export const apps: AppConfig[] = [
     emoji: '🎵',
     color: 'linear-gradient(135deg, #1a1a2e, #16213e)',
   },
+  {
+    id: 'legacy-site',
+    name: 'Old Site',
+    emoji: '🗂️',
+    color: 'linear-gradient(135deg, rgba(150,150,150,0.85), rgba(90,90,90,0.85))',
+    fullscreen: true,
+    src: '/legacy-site/index.html',
+  },
+  
 ]
