@@ -7,6 +7,7 @@ import NotesApp from '@/components/apps/NotesApp'
 import GalleryApp from '@/components/apps/GalleryApp'
 import LoungeApp from '@/components/apps/LoungeApp'
 import MusicApp from '@/components/apps/MusicApp'
+import LegacySite from '@/components/apps/LegacySite'
 
 function AppContent({ appId }: { appId: string }) {
   switch (appId) {
@@ -14,7 +15,8 @@ function AppContent({ appId }: { appId: string }) {
     case 'notes':   return <NotesApp />
     case 'gallery': return <GalleryApp />
     case 'lounge':  return <LoungeApp />
-    case 'music': return <MusicApp />
+    case 'music':   return <MusicApp />
+    case 'legacy':  return <LegacySite />
     default:
       return (
         <div className="flex items-center justify-center h-full">
@@ -29,14 +31,14 @@ export default function WindowLayer() {
   return (
     <>
       {windows.map((win: WindowState) => (
-  <AppWindow
-    key={win.id}
-    win={win}
-    transparent={win.appId === 'gallery' || win.appId === 'lounge'}
-  >
-    <AppContent appId={win.appId} />
-  </AppWindow>
-))}
+        <AppWindow
+          key={win.id}
+          win={win}
+          transparent={win.appId === 'gallery' || win.appId === 'lounge'}
+        >
+          <AppContent appId={win.appId} />
+        </AppWindow>
+      ))}
     </>
   )
 }

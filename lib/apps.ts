@@ -39,8 +39,8 @@ export const apps: AppConfig[] = [
     color: 'linear-gradient(135deg, #1a1a2e, #16213e)',
   },
   {
-    id: 'legacy-site',
-    name: 'Old Site',
+    id: 'legacy',
+    name: 'Kuromos',
     emoji: '🗂️',
     color: 'linear-gradient(135deg, rgba(150,150,150,0.85), rgba(90,90,90,0.85))',
     fullscreen: true,

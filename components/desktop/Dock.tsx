@@ -11,12 +11,12 @@ export default function Dock() {
   return (
     <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50">
       <div
-        className="flex items-end px-3 py-2 gap-2"
+        className="flex items-end px-2 py-1.5 gap-1.5"
         style={{
           background: 'rgba(255,255,255,0.22)',
           backdropFilter: 'blur(32px) saturate(200%)',
           WebkitBackdropFilter: 'blur(32px) saturate(200%)',
-          borderRadius: 18,
+          borderRadius: 14,
           border: '1px solid rgba(255,255,255,0.55)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6)',
         }}
@@ -42,7 +42,7 @@ export default function Dock() {
                   background: 'rgba(30,30,30,0.75)',
                   backdropFilter: 'blur(8px)',
                   color: 'white',
-                  fontSize: 11,
+                  fontSize: 8,
                   fontWeight: 500,
                   opacity: isHovered ? 1 : 0,
                   boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
@@ -55,8 +55,8 @@ export default function Dock() {
               <div
                 className="transition-all duration-200 cursor-pointer flex items-center justify-center rounded-2xl text-2xl"
                 style={{
-                  width: isHovered ? 60 : 52,
-                  height: isHovered ? 60 : 52,
+                  width: isHovered ? 48 : 40,
+                  height: isHovered ? 48 : 40,
                   transform: `translateY(${isHovered ? -8 : 0}px)`,
                   background: app.color,
                   filter: isHovered

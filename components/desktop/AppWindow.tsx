@@ -11,9 +11,38 @@ interface AppWindowProps {
 }
 
 export default function AppWindow({ win, children, transparent }: AppWindowProps) {
-  const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, moveWindow } =
+  const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, moveWindow, resizeWindow } =
     useWindowManager()
   const dragRef = useRef<{ mx: number; my: number; wx: number; wy: number } | null>(null)
+  const resizeRef = useRef<{ mx: number; my: number; ww: number; wh: number } | null>(null)
+
+  const onResizeMouseDown = useCallback((e: React.MouseEvent) => {
+  e.preventDefault()
+  e.stopPropagation()
+  focusWindow(win.id)
+  resizeRef.current = {
+    mx: e.clientX,
+    my: e.clientY,
+    ww: win.width,
+    wh: win.height,
+  }
+
+  const onMove = (e: MouseEvent) => {
+    if (!resizeRef.current) return
+    const newW = Math.max(320, resizeRef.current.ww + e.clientX - resizeRef.current.mx)
+    const newH = Math.max(240, resizeRef.current.wh + e.clientY - resizeRef.current.my)
+    resizeWindow(win.id, newW, newH)
+  }
+
+  const onUp = () => {
+    resizeRef.current = null
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+  }
+
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
+}, [win, focusWindow, resizeWindow])
 
   const onTitleBarMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.traffic-btn')) return
@@ -139,6 +168,27 @@ export default function AppWindow({ win, children, transparent }: AppWindowProps
           <div className="flex-1 overflow-hidden">
             {children}
           </div>
+          {/* Resize handle */}
+<div
+  onMouseDown={onResizeMouseDown}
+  style={{
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 18,
+    height: 18,
+    cursor: 'nwse-resize',
+    zIndex: 10,
+    display: 'flex',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    padding: 4,
+  }}
+>
+  <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+    <path d="M7 1L1 7M7 4L4 7M7 7L7 7" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2" strokeLinecap="round"/>
+  </svg>
+</div>
         </motion.div>
       )}
     </AnimatePresence>

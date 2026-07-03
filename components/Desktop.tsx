@@ -8,6 +8,7 @@ import DesktopBackground from '@/components/desktop/DesktopBackground'
 import MenuBar from '@/components/desktop/MenuBar'
 import Dock from '@/components/desktop/Dock'
 import WindowLayer from '@/components/desktop/WindowLayer'
+import WidgetRail from './desktop/WidgetRail'
 
 export default function Desktop() {
   const { session, loading } = useAuth()
@@ -38,6 +39,7 @@ export default function Desktop() {
         onUploadWallpaper={uploadWallpaper}
         onResetWallpaper={resetWallpaper}
       />
+      <WidgetRail />
       <div className="absolute inset-0" style={{ top: 28, bottom: 88 }} />
       <WindowLayer />
       <Dock />

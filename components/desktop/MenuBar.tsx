@@ -46,12 +46,12 @@ export default function MenuBar({ onUploadWallpaper, onResetWallpaper }: MenuBar
       <div
         className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-4"
         style={{
-          height: 28,
-          background: 'rgba(255,255,255,0.28)',
-          backdropFilter: 'blur(24px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-          borderBottom: '1px solid rgba(255,255,255,0.35)',
-        }}
+  height: 28,
+  background: 'rgba(255,255,255,0.01)',
+  backdropFilter: 'blur(2px) saturate(140%)',
+  WebkitBackdropFilter: 'blur(2px) saturate(20%)',
+  borderBottom: '1px solid rgba(255,255,255,0.05)',
+}}
       >
         {/* Left — menus */}
         <div className="flex items-center gap-0">
@@ -62,30 +62,18 @@ export default function MenuBar({ onUploadWallpaper, onResetWallpaper }: MenuBar
           >
             🌌
           </button>
-          {['Aurora', 'File', 'Edit', 'View', 'Window', 'Help'].map((item, i) => (
-            <span
-              key={item}
-              className="px-2 h-7 flex items-center rounded cursor-default transition-colors hover:bg-black/8"
-              style={{
-                fontSize: 13,
-                fontWeight: i === 0 ? 600 : 400,
-                color: 'rgba(0,0,0,0.85)',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {item}
-            </span>
-          ))}
+          
+        
         </div>
 
         {/* Right — status */}
         <div className="flex items-center gap-3">
           {/* Wifi icon */}
           <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
-            <path d="M8 10.5a1 1 0 100-2 1 1 0 000 2z" fill="rgba(0,0,0,0.75)" />
-            <path d="M5.2 8.1a4 4 0 015.6 0" stroke="rgba(0,0,0,0.75)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-            <path d="M2.8 5.7a7 7 0 0110.4 0" stroke="rgba(0,0,0,0.75)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-            <path d="M0.5 3.3a10 10 0 0115 0" stroke="rgba(0,0,0,0.75)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+            <path d="M8 10.5a1 1 0 100-2 1 1 0 000 2z" fill="rgba(255,255,255,0.90)" />
+            <path d="M5.2 8.1a4 4 0 015.6 0" stroke="rgba(255,255,255,0.90)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+            <path d="M2.8 5.7a7 7 0 0110.4 0" stroke="rgba(255,255,255,0.90)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+            <path d="M0.5 3.3a10 10 0 0115 0" stroke="rgba(255,255,255,0.90)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
           </svg>
 
           {/* Battery */}
@@ -94,25 +82,25 @@ export default function MenuBar({ onUploadWallpaper, onResetWallpaper }: MenuBar
               className="rounded-sm flex items-center px-0.5"
               style={{
                 width: 25, height: 12,
-                border: '1px solid rgba(0,0,0,0.35)',
+                border: '1px solid rgba(255,255,255,0.90)',
               }}
             >
               <div
                 className="h-2 rounded-sm"
-                style={{ width: '80%', background: 'rgba(0,0,0,0.7)' }}
+                style={{ width: '80%', background: 'rgba(255,255,255,0.90)' }}
               />
             </div>
             <div
               className="rounded-r-sm"
-              style={{ width: 2, height: 6, background: 'rgba(0,0,0,0.35)' }}
+              style={{ width: 2, height: 6, background: 'rgba(255,255,255,0.90)' }}
             />
           </div>
 
           {/* Date + Time */}
-          <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.75)', fontWeight: 400 }}>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.90)', fontWeight: 400 }}>
             {dateStr}
           </span>
-          <span style={{ fontSize: 13, color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.90)', fontWeight: 500 }}>
             {timeStr}
           </span>
         </div>

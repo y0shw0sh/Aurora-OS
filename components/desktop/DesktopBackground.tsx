@@ -8,20 +8,44 @@ const SONOMA_GRADIENT = `
   linear-gradient(135deg, #b6c8f0 0%, #d4a8d8 40%, #f0b8cc 70%, #c4d8f4 100%)
 `
 
+const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov']
+
 interface DesktopBackgroundProps {
-  wallpaperUrl:  string | null
+  wallpaperUrl: string | null
 }
 
+function isVideoUrl(url: string) {
+  // strip query params before checking extension (Supabase Storage URLs often have ?token=... etc.)
+  const path = url.split('?')[0].toLowerCase()
+  return VIDEO_EXTENSIONS.some((ext) => path.endsWith(ext))
+}
 
 export default function DesktopBackground({ wallpaperUrl }: DesktopBackgroundProps) {
+  const isVideo = wallpaperUrl ? isVideoUrl(wallpaperUrl) : false
+
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {wallpaperUrl ? (
+      {wallpaperUrl && isVideo && (
+        <video
+          key={wallpaperUrl} // remounts + reloads if the wallpaper URL changes
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src={wallpaperUrl} />
+        </video>
+      )}
+
+      {wallpaperUrl && !isVideo && (
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${wallpaperUrl})` }}
         />
-      ) : (
+      )}
+
+      {!wallpaperUrl && (
         <div
           className="absolute inset-0"
           style={{ background: SONOMA_GRADIENT }}

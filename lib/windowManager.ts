@@ -24,37 +24,44 @@ interface WindowManagerStore {
   minimizeWindow: (id: string) => void
   maximizeWindow: (id: string) => void
   restoreWindow: (id: string) => void
-  
+  resizeWindow: (id: string, width: number, height: number) => void
 }
 
 const DEFAULT_SIZES: Record<string, { width: number; height: number }> = {
-  todo:    { width: 480, height: 540 },
-  notes:   { width: 560, height: 580 },
+  todo:    { width: 350, height: 540 },
+  notes:   { width: 400, height: 580 },
   gallery: { width: 640, height: 580 },
   lounge:  { width: 520, height: 620 },
   default: { width: 520, height: 540 },
-  music: { width: 700, height: 620 },
+  music: { width: 700, height: 700 },
+  legacy: { width: 1200, height: 800 },
 }
 
 export const useWindowManager = create<WindowManagerStore>((set, get) => ({
   windows: [],
   topZ: 10,
 
-  openWindow: (appId, title) => {
-    const existing = get().windows.find((w) => w.appId === appId)
-    if (existing) {
-      if (existing.minimized) get().restoreWindow(existing.id)
-      get().focusWindow(existing.id)
-      return
-    }
-    const size = DEFAULT_SIZES[appId] ?? DEFAULT_SIZES.default
-    const offset = (get().windows.length % 6) * 30
-    const topZ = get().topZ + 1
-    set((s) => ({
-      topZ,
-      windows: [...s.windows, {
-        id: `${appId}-${Date.now()}`,
-        appId, title,
+openWindow: (appId, title) => {
+  const existing = get().windows.find((w) => w.appId === appId)
+  if (existing) {
+    if (existing.minimized) get().restoreWindow(existing.id)
+    get().focusWindow(existing.id)
+    return
+  }
+
+  const size = DEFAULT_SIZES[appId] ?? DEFAULT_SIZES.default
+  const offset = (get().windows.length % 6) * 30
+  const topZ = get().topZ + 1
+  const id = `${appId}-${Date.now()}`
+
+  set((s) => ({
+    topZ,
+    windows: [
+      ...s.windows,
+      {
+        id,
+        appId,
+        title,
         x: 100 + offset,
         y: 44 + offset,
         width: size.width,
@@ -62,9 +69,15 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
         zIndex: topZ,
         minimized: false,
         maximized: false,
-      }],
-    }))
-  },
+      },
+    ],
+  }))
+
+  if (appId === 'legacy') {
+    setTimeout(() => get().maximizeWindow(id), 0)
+  }
+},
+
 
   closeWindow: (id) =>
     set((s) => ({ windows: s.windows.filter((w) => w.id !== id) })),
@@ -86,6 +99,13 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
     set((s) => ({
       windows: s.windows.map((w) => w.id === id ? { ...w, minimized: true } : w),
     })),
+
+    resizeWindow: (id, width, height) =>
+  set((s) => ({
+    windows: s.windows.map((w) =>
+      w.id === id ? { ...w, width, height } : w
+    ),
+  })),
 
   maximizeWindow: (id) => {
     const win = get().windows.find((w) => w.id === id)
