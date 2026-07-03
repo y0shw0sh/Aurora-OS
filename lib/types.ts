@@ -41,3 +41,11 @@ export interface Message {
   content: string
   created_at: string
 }
+
+export interface JournalEntry {
+  id: string
+  user_id: string
+  photo_url: string
+  entry_text: string | null
+  created_at: string
+}
